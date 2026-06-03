@@ -12,7 +12,6 @@
 5. [Design Patterns Used & WHY](#5-design-patterns-used--why)
 6. [API Reference](#6-api-reference)
 7. [Authentication & Authorization Flow](#7-authentication--authorization-flow)
-8. [Phase Roadmap](#8-phase-roadmap)
 
 ---
 
@@ -196,12 +195,6 @@ The thin HTTP interface. Controllers should be dumb — they call services and r
 ### FluentValidation
 **Why**: Keeps validation logic out of controllers AND services. Validation rules are testable in isolation. Supports complex cross-field rules (e.g., `ConfirmPassword == Password`) cleanly. `AddFluentValidationAutoValidation()` triggers it before controller action methods run.
 
-### Soft Delete
-**Why**: Deleting a category that has historical orders would break referential integrity or require cascading deletes. Soft delete (`IsDeleted = true`) keeps records in the DB. The `HasQueryFilter` in DbContext means `IsDeleted` records are invisible to all EF queries automatically — no `WHERE IsDeleted = false` needed anywhere.
-
-### Price Snapshot Pattern
-**Why**: Both `CartItem.UnitPrice` and `OrderItem.UnitPrice` capture the price at the moment of action. This means price changes don't retroactively alter cart displays or order history totals. Critical for financial integrity.
-
 ---
 
 ## 6. API Reference
@@ -310,48 +303,4 @@ Client                          API                         Database
 | `AuthenticatedUser` | Admin + Customer | Cart, Orders |
 | Public (no policy) | Anyone | Auth, GET Products, GET Categories |
 
----
 
-## 8. Phase Roadmap
-
-### ✅ Phase 1: Project Setup + Architecture
-- N-Tier structure, all projects, solution file, .csproj references
-- Common layer: DTOs, Wrappers, Constants, Helpers
-
-### ✅ Phase 2: Authentication
-- ASP.NET Identity + JWT
-- Policy-based authorization
-- Register / Login endpoints
-- Auto-seed roles and admin user
-
-### ✅ Phase 3: Categories & Products
-- Full CRUD with soft delete
-- Pagination, filtering, search, sorting
-- Image upload integration
-
-### ✅ Phase 4: Cart System
-- Per-user cart (one cart per user DB constraint)
-- Add / Update / Remove / Get
-- Price snapshot on add
-- Stock validation
-
-### ✅ Phase 5: Orders
-- Atomic order placement (transaction: create order + clear cart)
-- Price snapshot on order
-- Stock decrement
-- Order history per user
-
-### ✅ Phase 6: Image Upload
-- File type validation
-- Size limit enforcement
-- Unique filename generation (GUID)
-- Public URL construction
-
-### 🔜 Phase 7 (Next Steps)
-- [ ] Add refresh token mechanism (store refresh token in DB)
-- [ ] Add admin order management (update order status)
-- [ ] Add product reviews/ratings module
-- [ ] Add payment integration (Stripe)
-- [ ] Write unit tests with xUnit + Moq
-- [ ] Add email notifications (order confirmation)
-- [ ] Add Docker support (Dockerfile + docker-compose.yml)
